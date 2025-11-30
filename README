@@ -2,6 +2,11 @@ Django To-Do List Project – Summary
 
 I started this project as a training exercise to practice using different technologies. For this project, I used Django to create a simple To-Do List web application. Below are the main steps involved in its development.
 
+git clone https://github.com/Fefavargas/todo-webpage-django.git
+cd todo-app
+python manage.py migrate
+python manage.py runserver
+
 1. What is Django?
 
 Django is a high-level web framework for Python that allows developers to build secure, scalable, and maintainable web applications quickly. It follows the Model–View–Template (MVT) architectural pattern and provides many built-in components, such as authentication, routing, an ORM, and an admin panel. This “batteries included” approach makes development faster, safer, and more organized.
