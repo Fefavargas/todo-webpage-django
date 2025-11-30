@@ -5,6 +5,7 @@ I started this project as a training exercise to practice using different techno
 git clone https://github.com/Fefavargas/todo-webpage-django.git
 cd todo-app
 python manage.py migrate
+python manage.py test todo
 python manage.py runserver
 
 1. What is Django?
@@ -105,7 +106,10 @@ The main page of the application.
 It displays the list of tasks and the form to add new ones.
 It extends base.html and fills in the content block.
 
-9. Running the App
+9. Test.py
+Test file checks three main areas of your Django app. First, it verifies that the Task model behaves correctly, especially the due_date field—confirming that it can be empty, saved, and retrieved properly. Second, it tests the views by simulating user actions such as creating, updating, deleting, and toggling tasks. These tests make sure the views return the correct status codes, redirect when expected, modify the database correctly, and render the right template. Third, it includes a migration test that ensures the initial migration file exists and properly defines the Task model, preventing issues with missing or broken migrations.
+
+10. Running the App
 
 Start the development server:
             python manage.py runserver - terminal
