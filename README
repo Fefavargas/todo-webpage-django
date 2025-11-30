@@ -1,55 +1,78 @@
+I started this project as a training exercise to practice using different technologies. For this project, I used Django to create a simple To-Do List web application, and below I explain the main steps behind its development.
 
-1 - Install Django
+1. What is Django?
+
+Django is a high-level web framework for Python that allows developers to build secure, scalable, and maintainable web applications quickly. It follows the Model–View–Template (MVT) architectural pattern and provides a wide range of built-in components—such as authentication, routing, ORM, and an admin panel. This allowed developers to have everything they need to build a complete web application out of the box, making the process faster, safer, and more organized.
+
+To start using Django, it must be installed through the terminal:
         pip install django
 
-2 - Project Setup
+2. Creating the Project Structure
+
+After installing Django, the next step is to use its command-line tools to set up the initial project structure:
         django-admin startproject todo_project
         cd todo_project
         python manage.py startapp todo
 
-3 - change the file todo_project/settings.py to add one more app
+startproject creates the main project folder and core configuration files. 
+todo_project/
+├── manage.py  — a command-line utility for interacting with this Django project (runs server, migrations)
+└── todo_project/
+    ├── __init__.py  — marks the inner folder as a Python package
+    ├── settings.py  — project configuration (databases, installed apps, middleware, templates, static files)
+    ├── urls.py — root URL router where you include app URLconfs
+    └── wsgi.py — WSGI entrypoint for deploying the project to a web server
+
+startapp generates a new application module—todo—where the to-do list functionality will be implemented.
+todo/
+├── __init__.py
+├── admin.py  — register models with Django admin
+├── apps.py  — app configuration (class Django uses to refer to the app)
+├── models.py  — define database models (your data schema)
+├── tests.py  — place to write automated tests
+├── views.py — request handlers / business logic (where TODO app logic will live)
+└── migrations/  — stores DB migration files (initially empty aside from __init__.py)
+    └── __init__.py
+
+3 - change the file todo_project/settings.py to add the app that we just created.
         INSTALLED_APPS = [
                           ...
                           'todo',
                       ]
 
-4 - create the model in the file todo/models.py:
-          from django.db import models
-          
-          class Task(models.Model):
-              title = models.CharField(max_length=200)
-              completed = models.BooleanField(default=False)
-          
-              def __str__(self):
-                  return self.title
+4 - create the model in the file todo/models.py. This is the data structured.
+        from django.db import models
+        class Task(models.Model):
+            title = models.CharField(max_length=200)
+            resolved = models.BooleanField(default=False)
+            due_date = models.DateField(null=True, blank=True)
+        
+            def __str__(self):
+                return self.title
 
-5 - run migrations
+5 - run migrations. In this step the important thing is make your code to be connected with the db. And running makemigrations it will checked the models.py and created a file that explains how should be the db. And the command migrate actully create it. A migration is a small file that describes changes to your database schema
           python manage.py makemigrations
           python manage.py migrate
 
-6 -  create the view in todo/views.py, add html pages
+6 -  create the view in todo/views.py. The views.py file is one of the core components of a Django application. It contains the logic that responds to user actions. Every time a user clicks a button, submits a form, or accesses a URL in your web application, a view function (or class-based view) is responsible for deciding what happens next. The view is where you connect user interactions (clicks, actions, form submissions) to what the application should do.
+          check my project to see an exemple of views.py
 
-7 - add URL configuration in todo/urls.py
-          from django.urls import path
-          from . import views
-          
-          urlpatterns = [
-              path("", views.home, name="home"),
-              path("create/", views.create_task, name="create"),
-              path("update/<int:pk>/", views.update_task, name="update"),
-              path("delete/<int:pk>/", views.delete_task, name="delete"),
-              path("toggle/<int:pk>/", views.toggle_complete, name="toggle"),
-          ]
+7 -  create the configuration of todo/urls.py. Django uses URLs to decide which view should be executed when a user accesses a specific page or triggers an action. Each URL is connect to one function in the view.py file. The urls.py file is essentially a map that connects:
 
-e no todo_project/urls.py
-            from django.contrib import admin
-            from django.urls import path, include
-            
-            urlpatterns = [
-                path('admin/', admin.site.urls),
-                path('', include('todo.urls')),
-            ]
+URL → view function → result shown to the user
+Here it is important to remember that exists two levels of urls.py. 
+todo_project/urls.py
+This file is the entry point for all URLs in your entire project.
+When a user visits your website, Django first looks at this file to decide which app should handle the request.
+todo/urls.py
+This file contains the routes specific to your to-do application
+        
+8 -  Create templetes. home.html/base.html
+After configuring URLs and views, the next step is to create the templates, which are the HTML files that Django uses to display information to the user. Templates allow you to connect your Python logic with the user interface.
+Django uses a template engine that supports variables, loops, conditions, and template inheritance. This lets you build dynamic pages while avoiding repeated HTML code.
+The base.html file works as a master layout, or a template that all other pages can inherit from. This is important because most pages share the same structure. Instead of rewriting this structure in every template, you place it in base.html once and reuse it everywhere.
+The home.html file is the page that displays the actual content of the To-Do application — for example, the list of tasks and the input form to add new tasks.This template extends base.html, meaning it uses the layout defined there and only needs to insert the specific content for the home page.
 
-8 - run app
+9 - run app
             python manage.py runserver - terminal
             http://127.0.0.1:8000/ - browser
