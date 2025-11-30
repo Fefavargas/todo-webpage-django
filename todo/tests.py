@@ -94,3 +94,25 @@ class TaskViewTests(TestCase):
 		self.assertEqual(resp.status_code, 200)
 		self.assertTemplateUsed(resp, 'home.html')
 
+
+	class MigrationFilesTests(TestCase):
+		def test_initial_migration_creates_task_model(self):
+			"""Ensure the app's initial migration defines the Task model.
+
+			This is a static check on the migration files and will catch
+			deleted/missing migrations that would cause "no such table" at runtime.
+			"""
+			from django.db.migrations.loader import MigrationLoader
+			from django.db import connections, DEFAULT_DB_ALIAS
+
+			loader = MigrationLoader(connections[DEFAULT_DB_ALIAS])
+			disk_migrations = loader.disk_migrations
+			key = ("todo", "0001_initial")
+			# the migration file should exist on disk
+			self.assertIn(key, disk_migrations, msg=f"Migration {key} not found on disk")
+			migration = disk_migrations[key]
+			# find CreateModel operations and ensure Task is created
+			create_models = [op for op in migration.operations if op.__class__.__name__ == 'CreateModel']
+			names = [op.name for op in create_models]
+			self.assertIn('Task', names, msg='Initial migration does not create Task model')
+
